@@ -1,9 +1,17 @@
-#!/usr/bin/env python3
 import os
 
 from custom_venv_builder import CustomVenvBuilder
 
-PACKAGES_TO_INSTALL = ["black", "flake8", "isort", "numpy", "pandas"]
+PACKAGES_TO_INSTALL = [
+    "black",
+    "flake8",
+    "isort",
+    "numpy",
+    "pandas",
+    "openpyxl",
+    "xlrd",
+    "xlsxwriter",
+]
 
 
 def main():
