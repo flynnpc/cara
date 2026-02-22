@@ -10,23 +10,6 @@ FILTER_KEYWORD_COLUMN = DF_COLUMN_HEADS[1]
 FILTER_KEYWORD = "Unknown Sample"
 
 
-def check_boolean_input(answer: str) -> bool:
-    if answer.lower() in ACCEPTED_BOOL_RESPONSES:
-        return True
-    else:
-        return False
-
-def check_valid_path(path: str) -> bool:
-    if os.path.isfile(path):
-        return True
-
-
-
-def input_verification(user_input: str, verification_type: list[function]) -> bool:
-    
-    new_answer = input("""Please try your input again.""")
-    input_verification(new_answer, verification_type)
-
 # Data comes from a machine output. The keyword should always be present.
 def find_ending_index(df):
     return df.index.get_loc(ENDING_KEYWORD)
@@ -157,4 +140,4 @@ def create_dfs(
     return extracted_data
 
 
-def transfer_data(output_xlsx_path):
+# def transfer_data(output_xlsx_path):
