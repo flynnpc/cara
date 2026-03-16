@@ -2,8 +2,10 @@ import os
 
 import pandas as pd
 
+from src.input_validation import InputValidation as Valid
 from utils import create_dfs, get_xls_file_names
 
+DEFAULT_XLSX_FILE_NAME: str = "Compound Results.xlsx"
 # Ask for requested compound name (sheet), if none is provided then get all compounds (sheets)
 # From each XLS file, get the "Filename" and "Calculated amount" rows from corresponding sheet name.
 # Rows start at header (4th line or where "Filename" and "Calculated amount" are located)
@@ -25,15 +27,10 @@ def main():
         Press enter if you would like to create a new xlsx file with the data."""
     )
 
-    output_xlsx_path = os.path.isfile(target_xlsx) if target_xlsx else ""
-
-    if not output_xlsx_path:
-        print("""The file path you enetered does not exist. Please try again.""")
-
-    output_xlsx_sheet_name: str = input(
-        """Enter the sheet name of where you would like the data transfered. Press
-            enter if you wouldlike to create a new sheet with the data."""
-    )
+    if Valid.check_if_output_xlsx_exists(target_xlsx):
+        output_xlsx_path = target_xlsx
+    else:
+        output_xlsx_path = os.path.join(os.getcwd(), DEFAULT_XLSX_FILE_NAME)
 
     compound_input: list[str] = input(
         """Input the compound you would like to transfer. Seperate compound names with a comma (,)
@@ -48,6 +45,10 @@ def main():
 
     # Get the file paths for all XLS files in the data directory
     data_files: list[str] = get_xls_file_names()
+
+    only_one_xls: bool = Valid.check_only_one_xls(data_files)
+    if not only_one_xls:
+        return
 
     # Convert all of the XLS files in data directory to Pandas Data Frames (df)
     dfs_from_xls: list[dict[str, pd.DataFrame]] = create_dfs(data_files, compound_names)

@@ -5,8 +5,11 @@ import pandas as pd
 STARTING_ROW_INDEX = 5
 ENDING_KEYWORD = "SHUTDOWN"
 NEEDED_COLUMNS_INDEXES = [0, 1, 8]
-DF_COLUMN_HEADS = ["Filename", "Sample Type", "Calculated amount"]
-FILTER_KEYWORD_COLUMN = DF_COLUMN_HEADS[1]
+DF_IMPORT_COLUMN_HEADS = [
+    "Filename",
+    "Sample Type",
+]  # "Calculated Amount" is left off list but imported
+FILTER_KEYWORD_COLUMN = DF_IMPORT_COLUMN_HEADS[1]
 FILTER_KEYWORD = "Unknown Sample"
 
 
@@ -15,32 +18,32 @@ def find_ending_index(df):
     return df.index.get_loc(ENDING_KEYWORD)
 
 
-def set_df_headers(
-    dfs_by_compound: list[dict[str, pd.DataFrame]],
-) -> list[dict[str, pd.DataFrame]]:
-    reindexed_dfs = []
-    for df_by_compound in dfs_by_compound:
-        df = list(df_by_compound.values())[0]
-        compound_name = list(df_by_compound.keys())[0]
-        df.columns = DF_COLUMN_HEADS
-        df.set_index(DF_COLUMN_HEADS[0], inplace=True)
-        reindexed_dfs.append({compound_name: df})
+# def set_df_headers(
+#     dfs_by_compound: list[dict[str, pd.DataFrame]],
+# ) -> list[dict[str, pd.DataFrame]]:
+#     reindexed_dfs = []
+#     for df_by_compound in dfs_by_compound:
+#         df = list(df_by_compound.values())[0]
+#         compound_name = list(df_by_compound.keys())[0]
+#         df.columns = DF_IMPORT_COLUMN_HEADS
+#         df.set_index(DF_IMPORT_COLUMN_HEADS[0], inplace=True)
+#         reindexed_dfs.append({compound_name: df})
 
 
-def extract_compound_rows(dataframes: dict[str, pd.DataFrame]):
-    compound_rows = {}
+# def extract_compound_rows(dataframes: dict[str, pd.DataFrame]):
+#     compound_rows = {}
 
-    for dataframe in dataframes:
-        compound_name: str = dataframe.keys()[0]
-        df: pd.DataFrame = dataframe.values()[0]
+#     for dataframe in dataframes:
+#         compound_name: str = dataframe.keys()[0]
+#         df: pd.DataFrame = dataframe.values()[0]
 
-        end_index = find_ending_index(df)
+#         end_index = find_ending_index(df)
 
-        rows = df[STARTING_ROW_INDEX:end_index]
+#         rows = df[STARTING_ROW_INDEX:end_index]
 
-        compound_rows[compound_name] = rows
+#         compound_rows[compound_name] = rows
 
-    return compound_rows
+#     return compound_rows
 
 
 def filter_by_compound(
@@ -49,16 +52,15 @@ def filter_by_compound(
 
     if compound_names:
         compound_filtered_df: list[dict[str, pd.DataFrame]] = []
-        for df in dataframes_by_compound:
-            if df.keys()[0].lower() in compound_names:
-                compound_filtered_df.append(df)
+        for df_by_compound in dataframes_by_compound:
+            if df_by_compound.keys()[0].lower() in compound_names:
+                compound_filtered_df.append(df_by_compound)
         return compound_filtered_df
 
     return dataframes_by_compound
 
 
 def get_xls_file_names(data_dir):
-    # data_dir = os.path.join(os.getcwd(), "data")
     if not os.path.exists(data_dir):
         print("It seems as though the data directory is missing. Maybe it was renamed?")
         return
@@ -89,8 +91,8 @@ def convert_xls_to_dfs(file_paths: list[str]) -> list[dict[str, pd.DataFrame]]:
 
         for compound in dfs_by_compound:
             df = dfs_by_compound[compound]
-            df.columns = DF_COLUMN_HEADS
-            df.set_index(DF_COLUMN_HEADS[0], inplace=True)
+            df.columns = DF_IMPORT_COLUMN_HEADS + [compound]
+            df.set_index(DF_IMPORT_COLUMN_HEADS[0], inplace=True)
 
             compound_to_df[compound] = df
 
@@ -138,6 +140,3 @@ def create_dfs(
         extracted_data.append({compound_name: filtered_df})
 
     return extracted_data
-
-
-# def transfer_data(output_xlsx_path):

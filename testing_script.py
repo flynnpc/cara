@@ -25,7 +25,7 @@ def main():
 
     df_1 = list(data[0].values())[0]
 
-    print(df_1.head())
+    print(df_1.index)
 
     # filtered_data = utils.filter_by_compound.filter_by_compound(data, [])
     # print(filtered_data)
